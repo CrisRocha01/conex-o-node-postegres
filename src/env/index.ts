@@ -9,6 +9,12 @@ const envSchema = z.object({
     .default('development'),
 
   PORT: z.coerce.number().default(3000),
+  ENV: z.string(),
+  DATABASE_USER: z.string(),
+  DATABASE_HOST: z.string(),
+  DATABASE_NAME: z.string(),
+  DATABASE_PASSWORD: z.string(),
+  DATABASE_PORT: z.coerce.number(),
 })
 
 const _env = envSchema.safeParse(process.env) // para receber e validar as variáveis de ambiente;
