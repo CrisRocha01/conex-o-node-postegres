@@ -1,5 +1,5 @@
 import CreatePersonUseCase from '../create-person'
-import { PersonRepository } from '@/repositories/person.repository'
+import { PersonRepository } from '@/repositories/pg/person.repository'
 
 export function makeCreatePersonUseCase() {
   const personRepository = new PersonRepository()
