@@ -1,7 +1,7 @@
 {
   "name": "pettech",
   "version": "1.0.0",
-  "description": "---\r presentation:\r   width: 1500\r   height: 900\r   theme: blood.css\r ---",
+  "description": "",
   "main": "index.js",
   "scripts": {
     "start:dev": "tsx watch src/server.ts",
