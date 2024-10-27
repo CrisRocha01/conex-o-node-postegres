@@ -1,5 +1,5 @@
-export interface Product {
-  id?: string
+export interface IProduct {
+  id?: string | undefined
   name: string
   description: string
   image_url: string
