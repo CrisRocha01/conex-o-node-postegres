@@ -1,7 +1,7 @@
 import { IAddress } from './models/address.interface'
 
 export class Address implements IAddress {
-  id?: string
+  id?: number
   street: string
   city: string
   state: string

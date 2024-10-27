@@ -32,9 +32,9 @@ export class AddressRepository implements IAddressRespository {
     zip_code,
     person_id,
   }: IAddress): Promise<IAddress | undefined> {
-    const result = await database.clientInstance?.query<IAddress>(
+    const result = await database.clientInstance?.query<IAddress & IPerson>(
       `
-      INSERT INTO "adress(street, city, state, zip_conde, person_id) VALUES ($1, $2, $3, $4, $5) RETURNING *
+      INSERT INTO "address"(street, city, state, zip_code, person_id) VALUES ($1, $2, $3, $4, $5) RETURNING  *
     `,
       [street, city, state, zip_code, person_id],
     )
