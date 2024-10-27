@@ -1,5 +1,5 @@
 import { Pool, PoolClient } from 'pg'
-import { env } from '../../env'
+import { env } from '@/env'
 
 const CONFIG = {
   user: env.DATABASE_USER,
