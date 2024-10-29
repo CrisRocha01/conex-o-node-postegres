@@ -3,7 +3,7 @@ import { PersonRepository } from '@/repositories/pg/person.repository'
 
 export function makeCreatePersonUseCase() {
   const personRepository = new PersonRepository()
-  const CreateCreatePersonUseCase = new CreatePersonUseCase(personRepository)
+  const createCreatePersonUseCase = new CreatePersonUseCase(personRepository)
 
-  return CreateCreatePersonUseCase
+  return createCreatePersonUseCase
 }
