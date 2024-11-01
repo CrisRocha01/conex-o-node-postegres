@@ -86,7 +86,7 @@ __decorateClass([
 ], Category.prototype, "name", 2);
 __decorateClass([
   (0, import_typeorm.Column)({
-    name: "created_at",
+    name: "creation_date",
     type: "timestamp without time zone",
     default: () => "CURRENT_TIMESTAMP"
   })
@@ -125,7 +125,7 @@ __decorateClass([
 ], Product.prototype, "image_url", 2);
 __decorateClass([
   (0, import_typeorm2.Column)({
-    name: "name",
+    name: "price",
     type: "double precision"
   })
 ], Product.prototype, "price", 2);
@@ -244,8 +244,8 @@ var PersonRepository = class {
 // src/use-cases/factory/make-create-person-use-case.ts
 function makeCreatePersonUseCase() {
   const personRepository = new PersonRepository();
-  const CreateCreatePersonUseCase = new CreatePersonUseCase(personRepository);
-  return CreateCreatePersonUseCase;
+  const createCreatePersonUseCase = new CreatePersonUseCase(personRepository);
+  return createCreatePersonUseCase;
 }
 
 // src/http/controllers/person/create.ts
@@ -530,8 +530,27 @@ var ProductRepository = class {
   constructor() {
     this.repository = appDataSource.getRepository(Product);
   }
-  create(product) {
+  async findAll(page, limit) {
+    return this.repository.find({
+      relations: ["categories"],
+      skip: (page - 1) * limit,
+      take: limit
+    });
+  }
+  async findById(id) {
+    return this.repository.findOne({
+      relations: ["categories"],
+      where: { id }
+    });
+  }
+  async create(product) {
     return this.repository.save(product);
+  }
+  async update(product) {
+    return this.repository.save(product);
+  }
+  async delete(id) {
+    await this.repository.delete(id);
   }
 };
 
@@ -578,9 +597,198 @@ async function create4(request, reply) {
   return reply.status(201).send(product);
 }
 
+// src/use-cases/find-product.ts
+var FindProductUseCase = class {
+  constructor(productRepository) {
+    this.productRepository = productRepository;
+  }
+  async handler(id) {
+    const product = await this.productRepository.findById(id);
+    if (!product) throw new ResourceNotFoundError();
+    return product;
+  }
+};
+
+// src/use-cases/factory/make-find-product-use-case.ts
+function makeFindProductUseCase() {
+  const productRepository = new ProductRepository();
+  const findProductUseCase = new FindProductUseCase(productRepository);
+  return findProductUseCase;
+}
+
+// src/http/controllers/product/find-product.ts
+var import_zod9 = require("zod");
+async function findProduct(request, reply) {
+  const registerParamsSchema = import_zod9.z.object({
+    id: import_zod9.z.coerce.string()
+  });
+  const { id } = registerParamsSchema.parse(request.params);
+  const findProductUseCase = makeFindProductUseCase();
+  const product = await findProductUseCase.handler(id);
+  return reply.status(200).send(product);
+}
+
+// src/use-cases/find-all-product.ts
+var FindAllProductUseCase = class {
+  constructor(productRepository) {
+    this.productRepository = productRepository;
+  }
+  async handler(page, limit) {
+    return this.productRepository.findAll(page, limit);
+  }
+};
+
+// src/use-cases/factory/make-find-all-product-use-case.ts
+function makeFindAllProductUseCase() {
+  const productRepository = new ProductRepository();
+  const findAllProductUseCase = new FindAllProductUseCase(productRepository);
+  return findAllProductUseCase;
+}
+
+// src/http/controllers/product/find-all-products.ts
+var import_zod10 = require("zod");
+async function findAllProducts(request, reply) {
+  const registerQuerySchema = import_zod10.z.object({
+    page: import_zod10.z.coerce.number().default(1),
+    limit: import_zod10.z.coerce.number().default(10)
+  });
+  const { page, limit } = registerQuerySchema.parse(request.query);
+  const findAllProductsUseCase = makeFindAllProductUseCase();
+  const products = await findAllProductsUseCase.handler(page, limit);
+  return reply.status(200).send(products);
+}
+
+// src/use-cases/delete-product.ts
+var DeleteProductUseCase = class {
+  constructor(ProductRepository2) {
+    this.ProductRepository = ProductRepository2;
+  }
+  async handler(id) {
+    return this.ProductRepository.delete(id);
+  }
+};
+
+// src/use-cases/factory/make-delete-product-use-case.ts
+function makeDeleteProductUseCase() {
+  const productRepository = new ProductRepository();
+  const deleteProductUseCase = new DeleteProductUseCase(productRepository);
+  return deleteProductUseCase;
+}
+
+// src/http/controllers/product/delete.ts
+var import_zod11 = require("zod");
+async function deleteProduct(request, reply) {
+  const registerParamsSchema = import_zod11.z.object({
+    id: import_zod11.z.coerce.string()
+  });
+  const { id } = registerParamsSchema.parse(request.params);
+  const deleteProductUseCase = makeDeleteProductUseCase();
+  await deleteProductUseCase.handler(id);
+  return reply.status(204).send();
+}
+
+// src/use-cases/update-product.ts
+var UpdateProductUseCase = class {
+  constructor(ProductRepository2) {
+    this.ProductRepository = ProductRepository2;
+  }
+  async handler(product) {
+    return this.ProductRepository.update(product);
+  }
+};
+
+// src/use-cases/factory/make-update-product-use-case.ts
+function makeUpdateProductUseCase() {
+  const productRepository = new ProductRepository();
+  const updateProductUseCase = new UpdateProductUseCase(productRepository);
+  return updateProductUseCase;
+}
+
+// src/http/controllers/product/update.ts
+var import_zod12 = require("zod");
+async function update(request, reply) {
+  const registerParamsSchema = import_zod12.z.object({
+    id: import_zod12.z.coerce.string()
+  });
+  const { id } = registerParamsSchema.parse(request.params);
+  const registerBodySchema = import_zod12.z.object({
+    name: import_zod12.z.string(),
+    description: import_zod12.z.string(),
+    image_url: import_zod12.z.string(),
+    price: import_zod12.z.coerce.number(),
+    categories: import_zod12.z.array(
+      import_zod12.z.object({
+        id: import_zod12.z.coerce.number(),
+        name: import_zod12.z.string()
+      })
+    ).optional()
+  });
+  const { name, description, image_url, price, categories } = registerBodySchema.parse(request.body);
+  const updateProductUseCase = makeUpdateProductUseCase();
+  const product = await updateProductUseCase.handler({
+    id,
+    name,
+    description,
+    image_url,
+    price,
+    categories: categories || []
+  });
+  return reply.status(200).send(product);
+}
+
 // src/http/controllers/product/routes.ts
 async function productRoutes(app2) {
   app2.post("/product", create4);
+  app2.get("/product/:id", findProduct);
+  app2.get("/product", findAllProducts);
+  app2.put("/product", update);
+  app2.delete("/product", deleteProduct);
+}
+
+// src/http/controllers/category/create.ts
+var import_zod13 = require("zod");
+
+// src/repositories/typeorm/category.repository.ts
+var CategoryRepository = class {
+  constructor() {
+    this.repository = appDataSource.getRepository(Category);
+  }
+  async create(name) {
+    await this.repository.save({ name });
+  }
+};
+
+// src/use-cases/create-category.ts
+var CreateCategoryUseCase = class {
+  constructor(categoryRepository) {
+    this.categoryRepository = categoryRepository;
+  }
+  async handler(name) {
+    await this.categoryRepository.create(name);
+  }
+};
+
+// src/use-cases/factory/make-create-category-use-case.ts
+function makeCreateCategoryUseCase() {
+  const categoryRepository = new CategoryRepository();
+  const createCategoryUseCase = new CreateCategoryUseCase(categoryRepository);
+  return createCategoryUseCase;
+}
+
+// src/http/controllers/category/create.ts
+async function create5(request, reply) {
+  const registerBodySchema = import_zod13.z.object({
+    name: import_zod13.z.string()
+  });
+  const { name } = registerBodySchema.parse(request.body);
+  const createCategoryUseCase = makeCreateCategoryUseCase();
+  await createCategoryUseCase.handler(name);
+  return reply.status(201).send();
+}
+
+// src/http/controllers/category/routes.ts
+async function categoryRoutes(app2) {
+  app2.post("/category", create5);
 }
 
 // src/app.ts
@@ -589,6 +797,7 @@ app.register(personRoutes);
 app.register(userRoutes);
 app.register(addressRoutes);
 app.register(productRoutes);
+app.register(categoryRoutes);
 app.setErrorHandler(globalErroHandler);
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {

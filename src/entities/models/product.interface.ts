@@ -4,7 +4,7 @@ export interface IProduct {
   id?: string | undefined
   name: string
   description: string
-  image: string
+  image_url: string
   price: number
   categories?: ICategory[]
 }

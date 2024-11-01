@@ -12,7 +12,7 @@ export async function update(request: FastifyRequest, reply: FastifyReply) {
   const registerBodySchema = z.object({
     name: z.string(),
     description: z.string(),
-    image: z.string(),
+    image_url: z.string(),
     price: z.coerce.number(),
     categories: z
       .array(
@@ -24,7 +24,7 @@ export async function update(request: FastifyRequest, reply: FastifyReply) {
       .optional(),
   })
 
-  const { name, description, image, price, categories } =
+  const { name, description, image_url, price, categories } =
     registerBodySchema.parse(request.body)
 
   const updateProductUseCase = makeUpdateProductUseCase()
@@ -33,7 +33,7 @@ export async function update(request: FastifyRequest, reply: FastifyReply) {
     id,
     name,
     description,
-    image,
+    image_url,
     price,
     categories: categories || [],
   })

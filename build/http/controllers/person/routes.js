@@ -107,8 +107,8 @@ var PersonRepository = class {
 // src/use-cases/factory/make-create-person-use-case.ts
 function makeCreatePersonUseCase() {
   const personRepository = new PersonRepository();
-  const CreateCreatePersonUseCase = new CreatePersonUseCase(personRepository);
-  return CreateCreatePersonUseCase;
+  const createCreatePersonUseCase = new CreatePersonUseCase(personRepository);
+  return createCreatePersonUseCase;
 }
 
 // src/http/controllers/person/create.ts

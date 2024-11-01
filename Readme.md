@@ -298,6 +298,7 @@ add constraint fk_user_id foreign key (user_id) references user(id);
 ## Migrations
 
 - Migrations são uma maneira de gerenciar alterações e evoluções do esquema de um banco de dados ao longo do tempo, permitindo que você versione e controle as alterações de forma sistemática e organizada.
+- npm run build && npx typeorm migration:run -d ./build/lib/typeorm/typeorm.js
 
 <!-- slide --> 
 
