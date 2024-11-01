@@ -6,7 +6,7 @@ import { IPerson } from '@/entities/models/person.interface'
 export class UserRepository implements IUserRepository {
   async findByUsername(username: string): Promise<IUser | undefined> {
     const result = await database.clientInstance?.query<IUser>(
-      `SELECT * FROM 'user' WHERE username = $1`,
+      `SELECT * FROM "user" WHERE username = $1`,
       [username],
     )
 
